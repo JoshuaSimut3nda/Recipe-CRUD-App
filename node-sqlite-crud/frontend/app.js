@@ -1,4 +1,4 @@
-const API_URL = '/api/recipes';
+const API_URL = 'https://recipe-crud-app-joshuasimutenda.onrender.com/api/recipes';
 
 const form = document.getElementById('recipeForm');
 const tableBody = document.getElementById('recipeTableBody');
