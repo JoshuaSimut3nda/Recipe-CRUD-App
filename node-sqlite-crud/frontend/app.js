@@ -1,4 +1,6 @@
-const API_URL = '/api/recipes';
+// Change this URL to your actual Render backend URL (e.g., 'https://my-recipe-app.onrender.com/api/recipes')
+// Keep it as '/api/recipes' ONLY if your backend is hosting the frontend from the exact same server.
+const API_URL = 'https://your-backend-name.onrender.com/api/recipes';
 
 const form = document.getElementById('recipeForm');
 const tableBody = document.getElementById('recipeTableBody');
@@ -10,23 +12,27 @@ const prepTimeInput = document.getElementById('prep_time_mins');
 const categoryInput = document.getElementById('category');
 
 async function fetchRecipes() {
-    const res = await fetch(API_URL);
-    const recipes = await res.json();
-    tableBody.innerHTML = '';
-    recipes.forEach(r => {
-        tableBody.innerHTML += `
-            <tr>
-                <td>${r.id}</td>
-                <td>${r.title}</td>
-                <td>${r.category || ''}</td>
-                <td>${r.prep_time_mins || ''} mins</td>
-                <td>
-                    <button onclick="editRecipe(${r.id}, '${r.title}', '${r.ingredients || ''}', '${r.instructions || ''}', ${r.prep_time_mins || 0}, '${r.category || ''}')">Edit</button>
-                    <button onclick="deleteRecipe(${r.id})">Delete</button>
-                </td>
-            </tr>
-        `;
-    });
+    try {
+        const res = await fetch(API_URL);
+        const recipes = await res.json();
+        tableBody.innerHTML = '';
+        recipes.forEach(r => {
+            tableBody.innerHTML += `
+                <tr>
+                    <td>${r.id}</td>
+                    <td>${r.title}</td>
+                    <td>${r.category || ''}</td>
+                    <td>${r.prep_time_mins || ''} mins</td>
+                    <td>
+                        <button onclick="editRecipe(${r.id}, '${r.title}', '${r.ingredients || ''}', '${r.instructions || ''}', ${r.prep_time_mins || 0}, '${r.category || ''}')">Edit</button>
+                        <button onclick="deleteRecipe(${r.id})">Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) {
+        console.error('Error fetching recipes:', error);
+    }
 }
 
 form.addEventListener('submit', async (e) => {
@@ -40,23 +46,27 @@ form.addEventListener('submit', async (e) => {
         category: categoryInput.value
     };
 
-    if (id) {
-        await fetch(`${API_URL}/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-    } else {
-        await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-    }
+    try {
+        if (id) {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        } else {
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
 
-    form.reset();
-    recipeIdInput.value = '';
-    fetchRecipes();
+        form.reset();
+        recipeIdInput.value = '';
+        fetchRecipes();
+    } catch (error) {
+        console.error('Error saving recipe:', error);
+    }
 });
 
 window.editRecipe = function(id, title, ingredients, instructions, prep_time, category) {
@@ -70,8 +80,12 @@ window.editRecipe = function(id, title, ingredients, instructions, prep_time, ca
 
 window.deleteRecipe = async function(id) {
     if (confirm('Are you sure you want to delete this record?')) {
-        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        fetchRecipes();
+        try {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            fetchRecipes();
+        } catch (error) {
+            console.error('Error deleting recipe:', error);
+        }
     }
 }
 
