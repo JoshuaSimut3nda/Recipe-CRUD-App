@@ -12,7 +12,11 @@ const categoryInput = document.getElementById('category');
 async function fetchRecipes() {
     try {
         const res = await fetch(API_URL);
-        const recipes = await res.json();
+        const data = await res.json();
+        
+        // Safely extract the array whether backend returns an array or an object wrapper
+        const recipes = Array.isArray(data) ? data : (data.recipes || data.data || []);
+
         tableBody.innerHTML = '';
         recipes.forEach(r => {
             tableBody.innerHTML += `
