@@ -1,6 +1,4 @@
-// Change this URL to your actual Render backend URL (e.g., 'https://my-recipe-app.onrender.com/api/recipes')
-// Keep it as '/api/recipes' ONLY if your backend is hosting the frontend from the exact same server.
-const API_URL = 'https://your-backend-name.onrender.com/api/recipes';
+const API_URL = '/api/recipes';
 
 const form = document.getElementById('recipeForm');
 const tableBody = document.getElementById('recipeTableBody');
